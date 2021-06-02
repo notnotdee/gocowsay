@@ -63,14 +63,14 @@ func buildBubble(lines []string, width int) string {
 		format = append(format, str)
 		i := 1
 		for ; i < count - 1; i++ {
-			str := fmt.Sprintf("%s %s %s", borders[4], lines[i], borders[4])
+			str = fmt.Sprintf("%s %s %s", borders[4], lines[i], borders[4])
 			format = append(format, str)
 		}
 		str = fmt.Sprintf("%s %s %s", borders[2], lines[i], borders[3])
 		format = append(format, str)
 	}
 
-	format =append(format, bottom)
+	format = append(format, bottom)
 	return strings.Join(format, "\n")
 
 }
@@ -94,16 +94,16 @@ func main() {
 
 	// At this point, you can query `$ fortune | ./gocowsay` in your CLI
 
+	var lines []string 
 	// The bufio package provides a buffered I/O in GoLang.
 	// NewReader returns a new Reader whose buffer has the default size.
 	// We're passing the NewReader the result of the stdin.
 	reader := bufio.NewReader(os.Stdin)
-	var lines []string
 
 	// ReadRune reads a single UTF-8 encoded Unicode character and returns the rune and its size in bytes. If the encoded rune is invalid, it consumes one byte and returns unicode.ReplacementChar (U+FFFD) with a size of 1.
 	// EOF is the error returned by Read when no more input is available.
 	for {
-		line, _, err := reader.ReadRune()
+		line, _, err := reader.ReadLine()
 		if err != nil && err == io.EOF {
 			break
 		}
@@ -121,7 +121,9 @@ func main() {
 	maxwidth := calculateMaxWidth(lines)
 	messages := normalizeStringLength(lines, maxwidth)
 	bubble := buildBubble(messages, maxwidth)
+
 	fmt.Println(bubble)
 	fmt.Println(cow)
 	fmt.Println()
+	fmt.Println(lines, messages, maxwidth)
 }
