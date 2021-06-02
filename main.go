@@ -5,7 +5,18 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
+
+// tabsToSpaces converts all tabs found in the lines slice to 4 spaces ([]string), to prevent misalignments in counting the runes
+func tabsToSpaces(lines []string) []string {
+	var format []string
+	for _, l := range lines {
+		l = strings.Replace(l, "\t", "    ", -1)
+		format = append(format, l)
+	}
+	return format
+}
 
 func main() {
 	// os.Stdin.Stat() returns an os.FileInfo
@@ -17,7 +28,7 @@ func main() {
 	// The .Mode() looks like this: `$ Dcrw--w----`
 	// The flag we are looking for is os.ModeNamedPipe. When this flag is on it means that we have a pipe.
 	// This way we can know when our command is receiving stdout from another process.
-	if info.Mode() & os.ModeNamedPipe == 0 {
+	if info.Mode()&os.ModeNamedPipe == 0 {
 		fmt.Println("This command is intended to work with pipes.")
 		// fortune is a CLI tool that prints a random quotation.
 		// fmt.Println("Usage: fortune | ./gocowsay")
@@ -26,7 +37,7 @@ func main() {
 
 	// At this point, you can query `$ fortune | ./gocowsay` in your CLI
 
-	// The bufio package provides a buffered I/O in GoLang. 
+	// The bufio package provides a buffered I/O in GoLang.
 	// NewReader returns a new Reader whose buffer has the default size.
 	// We're passing the NewReader the result of the stdin.
 	reader := bufio.NewReader(os.Stdin)
@@ -46,22 +57,24 @@ func main() {
 		fmt.Printf("%c", lines[j])
 	}
 
-	var cow = `        \  ^__^
+	var cow = `         \  ^__^
           \ (oo)\_______
 	    (__)\       )\/\
 	        ||----w |
 	        ||     ||
 		`
 
-	fmt.Println(cow)
+	// we're going to do some string parsing now
+	lines = tabsToSpaces(lines)
 
 	// At this point, we have an app that reads user input from the pipe and prints it back.
 	// We need to...
-	// Read each line from pipe input into a []string
-	// Build a cow design using ASCII
 	// Convert all tabs received as input to spaces to prevent issues with lines length count using runes
 	// Get the length of the longest line
 	// Normalize all lines by appending white chars
 	// Build the text bubble
 	// Print the text bubble and the cow
+
+	fmt.Println(lines)
+	fmt.Println(cow)
 }
