@@ -19,9 +19,9 @@ func main() {
 	// This way we can know when our command is receiving stdout from another process.
 	if info.Mode() & os.ModeNamedPipe == 0 {
 		fmt.Println("This command is intended to work with pipes.")
-	} else {
 		// fortune is a CLI tool that prints a random quotation.
-		fmt.Println("Usage: fortune | ./gocowsay")
+		// fmt.Println("Usage: fortune | ./gocowsay")
+		return
 	}
 
 	// At this point, you can query `$ fortune | ./gocowsay` in your CLI
@@ -30,21 +30,30 @@ func main() {
 	// NewReader returns a new Reader whose buffer has the default size.
 	// We're passing the NewReader the result of the stdin.
 	reader := bufio.NewReader(os.Stdin)
-	var output []rune
+	var lines []string
 
 	// ReadRune reads a single UTF-8 encoded Unicode character and returns the rune and its size in bytes. If the encoded rune is invalid, it consumes one byte and returns unicode.ReplacementChar (U+FFFD) with a size of 1.
 	// EOF is the error returned by Read when no more input is available.
 	for {
-		input, _, err := reader.ReadRune()
+		line, _, err := reader.ReadRune()
 		if err != nil && err == io.EOF {
 			break
 		}
-		output = append(output, input)
+		lines = append(lines, string(line))
 	}
 
-	for j := 0; j < len(output); j++ {
-		fmt.Printf("%c", output[j])
+	for j := 0; j < len(lines); j++ {
+		fmt.Printf("%c", lines[j])
 	}
+
+	var cow = `        \  ^__^
+          \ (oo)\_______
+	    (__)\       )\/\
+	        ||----w |
+	        ||     ||
+		`
+
+	fmt.Println(cow)
 
 	// At this point, we have an app that reads user input from the pipe and prints it back.
 	// We need to...
