@@ -43,6 +43,38 @@ func normalizeStringLength(lines []string, width int) []string {
 	return format
 }
 
+// buildBubble takes a slice of strings of width maxwidth, prepends/appends margins on first and last line, and at start/end of each line, then returns a string with the contents of the text bubble
+func buildBubble(lines []string, width int) string {
+	var borders []string
+	count := len(lines)
+	var format []string
+
+	borders = []string{"/", "\\", "\\", "/", "|", "<", ">"}
+
+	top := " " + strings.Repeat("_", width + 2)
+	bottom := " " + strings.Repeat("-", width + 2)
+
+	format = append(format, top)
+	if count == 1 {
+		str := fmt.Sprintf("%s %s %s", borders[5], lines[0], borders[6])
+		format = append(format, str)
+	} else {
+		str := fmt.Sprintf("%s %s %s", borders[0], lines[0], borders[1])
+		format = append(format, str)
+		i := 1
+		for ; i < count - 1; i++ {
+			str := fmt.Sprintf("%s %s %s", borders[4], lines[i], borders[4])
+			format = append(format, str)
+		}
+		str = fmt.Sprintf("%s %s %s", borders[2], lines[i], borders[3])
+		format = append(format, str)
+	}
+
+	format =append(format, bottom)
+	return strings.Join(format, "\n")
+
+}
+
 func main() {
 	// os.Stdin.Stat() returns an os.FileInfo
 	info, err := os.Stdin.Stat()
@@ -78,10 +110,6 @@ func main() {
 		lines = append(lines, string(line))
 	}
 
-	for j := 0; j < len(lines); j++ {
-		fmt.Printf("%c", lines[j])
-	}
-
 	var cow = `         \  ^__^
           \ (oo)\_______
 	    (__)\       )\/\
@@ -92,14 +120,8 @@ func main() {
 	lines = tabsToSpaces(lines)
 	maxwidth := calculateMaxWidth(lines)
 	messages := normalizeStringLength(lines, maxwidth)
-
-	// We need to...
-	// Normalize all lines by appending white chars
-
-	// Build the text bubble
-	// Print the text bubble and the cow
-
-	fmt.Println(messages)
+	bubble := buildBubble(messages, maxwidth)
+	fmt.Println(bubble)
 	fmt.Println(cow)
-	fmt.Println(maxwidth)
+	fmt.Println()
 }
