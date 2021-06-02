@@ -33,7 +33,7 @@ func main() {
 	var output []rune
 
 	// ReadRune reads a single UTF-8 encoded Unicode character and returns the rune and its size in bytes. If the encoded rune is invalid, it consumes one byte and returns unicode.ReplacementChar (U+FFFD) with a size of 1.
-	// EOF is the error returned by Read when no more input is available.Functions should return EOF only to signal a graceful end of input. If the EOF occurs unexpectedly in a structured data stream, the appropriate error is either ErrUnexpectedEOF or some other error giving more detail.
+	// EOF is the error returned by Read when no more input is available.
 	for {
 		input, _, err := reader.ReadRune()
 		if err != nil && err == io.EOF {
@@ -45,4 +45,16 @@ func main() {
 	for j := 0; j < len(output); j++ {
 		fmt.Printf("%c", output[j])
 	}
+
+	// At this point, we have an app that reads user input from the pipe and prints it back.
+	// We need to...
+	// Read each line from pipe input into a []string
+	// Build a cow design using ASCII
+	// Convert all tabs received as input to spaces to prevent issues with lines length count using runes
+	// Get the length of the longest line
+	// Normalize all lines by appending white chars
+	// Build the text bubble
+	// Print the text bubble and the cow
+
+	
 }
