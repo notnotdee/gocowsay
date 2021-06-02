@@ -51,8 +51,8 @@ func buildBubble(lines []string, width int) string {
 
 	borders = []string{"/", "\\", "\\", "/", "|", "<", ">"}
 
-	top := " " + strings.Repeat("_", width + 2)
-	bottom := " " + strings.Repeat("-", width + 2)
+	top := " " + strings.Repeat("_", width+2)
+	bottom := " " + strings.Repeat("-", width+2)
 
 	format = append(format, top)
 	if count == 1 {
@@ -62,7 +62,7 @@ func buildBubble(lines []string, width int) string {
 		str := fmt.Sprintf("%s %s %s", borders[0], lines[0], borders[1])
 		format = append(format, str)
 		i := 1
-		for ; i < count - 1; i++ {
+		for ; i < count-1; i++ {
 			str = fmt.Sprintf("%s %s %s", borders[4], lines[i], borders[4])
 			format = append(format, str)
 		}
@@ -94,7 +94,7 @@ func main() {
 
 	// At this point, you can query `$ fortune | ./gocowsay` in your CLI
 
-	var lines []string 
+	var lines []string
 	// The bufio package provides a buffered I/O in GoLang.
 	// NewReader returns a new Reader whose buffer has the default size.
 	// We're passing the NewReader the result of the stdin.
@@ -124,5 +124,4 @@ func main() {
 
 	fmt.Println(bubble)
 	fmt.Println(cow)
-	fmt.Println()
 }
