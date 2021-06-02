@@ -6,16 +6,30 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode/utf8"
 )
 
 // tabsToSpaces converts all tabs found in the lines slice to 4 spaces ([]string), to prevent misalignments in counting the runes
 func tabsToSpaces(lines []string) []string {
 	var format []string
-	for _, l := range lines {
-		l = strings.Replace(l, "\t", "    ", -1)
-		format = append(format, l)
+	for _, line := range lines {
+		line = strings.Replace(line, "\t", "    ", -1)
+		format = append(format, line)
 	}
 	return format
+}
+
+// calculateMaxWidth takes a slice of strings and returns the length of the string with the longest length
+func calculateMaxWidth(lines []string) int {
+	width := 0
+	for _, line := range lines {
+		len := utf8.RuneCountInString(line)
+		if len > width {
+			width = len
+		}
+	}
+
+	return width
 }
 
 func main() {
@@ -64,17 +78,17 @@ func main() {
 	        ||     ||
 		`
 
-	// we're going to do some string parsing now
 	lines = tabsToSpaces(lines)
+	maxwidth := calculateMaxWidth(lines)
 
-	// At this point, we have an app that reads user input from the pipe and prints it back.
 	// We need to...
-	// Convert all tabs received as input to spaces to prevent issues with lines length count using runes
 	// Get the length of the longest line
+
 	// Normalize all lines by appending white chars
 	// Build the text bubble
 	// Print the text bubble and the cow
 
 	fmt.Println(lines)
 	fmt.Println(cow)
+	fmt.Println(maxwidth)
 }
