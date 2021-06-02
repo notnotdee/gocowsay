@@ -32,6 +32,17 @@ func calculateMaxWidth(lines []string) int {
 	return width
 }
 
+// normalizeStringLength takes a slice of strings and appends to each one a number of spaces required to achieve an equal number of runes
+func normalizeStringLength(lines []string, width int) []string {
+	var format []string
+	for _, line := range lines {
+		str := line + strings.Repeat(" ", width-utf8.RuneCountInString(line))
+		format = append(format, str)
+	}
+
+	return format
+}
+
 func main() {
 	// os.Stdin.Stat() returns an os.FileInfo
 	info, err := os.Stdin.Stat()
@@ -80,15 +91,15 @@ func main() {
 
 	lines = tabsToSpaces(lines)
 	maxwidth := calculateMaxWidth(lines)
+	messages := normalizeStringLength(lines, maxwidth)
 
 	// We need to...
-	// Get the length of the longest line
-
 	// Normalize all lines by appending white chars
+
 	// Build the text bubble
 	// Print the text bubble and the cow
 
-	fmt.Println(lines)
+	fmt.Println(messages)
 	fmt.Println(cow)
 	fmt.Println(maxwidth)
 }
