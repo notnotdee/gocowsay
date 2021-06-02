@@ -125,5 +125,4 @@ func main() {
 	fmt.Println(bubble)
 	fmt.Println(cow)
 	fmt.Println()
-	fmt.Println(lines, messages, maxwidth)
 }
