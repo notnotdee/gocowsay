@@ -55,6 +55,4 @@ func main() {
 	// Normalize all lines by appending white chars
 	// Build the text bubble
 	// Print the text bubble and the cow
-
-	
 }
