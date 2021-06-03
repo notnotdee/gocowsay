@@ -1,6 +1,6 @@
 #### Instructions
 
-Currently designed to work with any CLI program (like `fortune`) that can pipe its stdout into the stdin of the `gocowsay` program. 
+Currently designed to work with any CLI tool (`fortune` is an easy one) that can pipe its stdout into the stdin of the `gocowsay` program, or echoed text.
 
 **To run the program within the project directory**
 ```
@@ -13,6 +13,11 @@ $ sudo apt install fortune
 
 ```
 $ fortune | ./gocowsay
+```
+
+Or, 
+```
+$ echo 'your text here' | ./gocowsay
 ```
 
 
@@ -39,6 +44,12 @@ $ sudo apt install fortune
 ```
 $ fortune | gocowsay
 ```
+
+Or, 
+```
+$ echo 'your text here' | gocowsay
+```
+
 
 #### Next 
 - [ ] Add flags logic to change animal avatar or animal eyes
