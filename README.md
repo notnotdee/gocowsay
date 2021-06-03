@@ -49,3 +49,5 @@ $ fortune | gocowsay
 - [ ] Publish package to pkg.go.dev such that `$ go get -u github.com/dl-watson/gocowsay` works as expected
 
 #### Screenshots
+
+<img src="img/screenshot.png">
