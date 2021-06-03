@@ -14,6 +14,67 @@ import (
 
 var columns *int32
 
+// readInput takes in and interprets any flags, then formats the standard input and returns a text output slice
+func readInput(args []string) []string {
+	// Initialize a temp string variable
+	var tmps []string
+
+	// If the length of args is 0, there are no flags, so we interpret input as text to be printed
+	if len(args) == 0 {
+		// Initialize a new scanner to read from os.Stdin
+		s := bufio.NewScanner(os.Stdin)
+
+		// Scan will advance the scanner to the next token for as long as that is a valid operation
+		for s.Scan() {
+			tmps = append(tmps, s.Text())
+		}
+
+		// If there is an error, display it
+		if s.Err() != nil {
+			log.Printf("Err reading stdin: %s\n", s.Err().Error())
+			os.Exit(1)
+		}
+
+		// If there is no stdin, display an error
+		if len(tmps) == 0 {
+			fmt.Println("Err: no input from stdin")
+			os.Exit(1)
+		}
+	} else {
+		// If the length of args is anything but 0, set tmps equal to args
+		tmps = args
+	}
+
+	// Initialize a messages variable
+	var msgs []string
+	for i := 0; i < len(tmps); i++ {
+		// Replace tabs with spaces to prep the string for formatting with WrapString
+		expand := strings.Replace(tmps[i], "\t", "    ", -1)
+
+		// WrapString wraps the given string within lim width in characters; wrapping only happens at whitespace
+		tmp := wordwrap.WrapString(expand, uint(*columns))
+
+		// Use a single append to concatenate two slices
+		msgs = append(msgs, strings.Split(tmp, "\n")...)
+	}
+
+	return msgs
+}
+
+// maxWidth takes in a slice of strings and returns the max width
+func maxWidth(msgs []string) int {
+	max := 0
+	// Loop through the range of msgs and update the max width every time we encounter a larger value
+	for _, msg := range msgs {
+		len := utf8.RuneCountInString(msg)
+		if len > max {
+			max = len
+		}
+	}
+
+	return max
+}
+
 // setPadding takes a slice of strings and appends to each one a number of spaces required to achieve an equal number of runes per line
 func setPadding(lines []string, width int) []string {
 	var format []string
@@ -63,78 +124,17 @@ func main() {
 
 	inputs := readInput(flag.Args())
 
-	// var cow = `         \  ^__^
-    //       \ (oo)\_______
-	//     (__)\       )\/\
-	//         ||----w |
-	//         ||     ||
-	// 	`
+	var cow = `         \  ^__^
+          \ (oo)\_______
+	    (__)\       )\/\
+	        ||----w |
+	        ||     ||
+		`
 
 	width := maxWidth(inputs)
 	messages := setPadding(inputs, width)
-	// bubble := buildBubble(messages, maxwidth)
+	bubble := buildBubble(messages, width)
 
-	fmt.Println(messages)
-	// fmt.Println(cow)
-}
-
-// readInput takes in and interprets any flags, then formats the standard input and returns a text output slice
-func readInput(args []string) []string {
-	// Initialize a temp string variable 
-	var tmps []string
-
-	// If the length of args is 0, there are no flags, so we interpret input as text to be printed
-	if len(args) == 0 {
-		// Initialize a new scanner to read from os.Stdin
-		s := bufio.NewScanner(os.Stdin)
-
-		// Scan will advance the scanner to the next token for as long as that is a valid operation
-		for s.Scan() {
-			tmps = append(tmps, s.Text())
-		}
-
-		// If there is an error, display it
-		if s.Err() != nil {
-			log.Printf("Err reading stdin: %s\n", s.Err().Error())
-			os.Exit(1)
-		}
-		
-		// If there is no stdin, display an error
-		if len(tmps) == 0 {
-			fmt.Println("Err: no input from stdin")
-			os.Exit(1)
-		}
-	} else {
-		// If the length of args is anything but 0, set tmps equal to args
-		tmps = args
-	}
-
-	// Initialize a messages variable
-	var msgs []string
-	for i := 0; i < len(tmps); i++ {
-		// Replace tabs with spaces to prep the string for formatting with WrapString
-		expand := strings.Replace(tmps[i], "\t", "    ", -1)
-
-		// WrapString wraps the given string within lim width in characters; wrapping only happens at whitespace
-		tmp := wordwrap.WrapString(expand, uint(*columns))
-
-		// Use a single append to concatenate two slices
-		msgs = append(msgs, strings.Split(tmp, "\n")...)
-	}
-
-	return msgs
-}
-
-// maxWidth takes in a slice of strings and returns the max width
-func maxWidth(msgs []string) int {
-	max := 0
-	// Loop through the range of msgs and update the max width every time we encounter a larger value
-	for _, msg := range msgs {
-		len := utf8.RuneCountInString(msg)
-		if len > max {
-			max = len
-		}
-	}
-
-	return max
+	fmt.Println(bubble)
+	fmt.Println(cow)
 }
