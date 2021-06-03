@@ -115,7 +115,6 @@ func buildBubble(lines []string, width int) string {
 
 	format = append(format, bottom)
 	return strings.Join(format, "\n")
-
 }
 
 func main() {
