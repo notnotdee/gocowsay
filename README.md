@@ -1,6 +1,6 @@
 #### Instructions
 
-Currently designed to work with any CLI program (like `fortune`) that can pipe its stdout into the stdin of the `gocowsay` executable. 
+Currently designed to work with any CLI program (like `fortune`) that can pipe its stdout into the stdin of the `gocowsay` program. 
 
 **To run the program within the project directory**
 ```
