@@ -1,4 +1,4 @@
-module main
+module github.com/dl-watson/gocowsay
 
 go 1.13
 
