@@ -60,7 +60,8 @@ func buildBubble(lines []string, width int) string {
 func main() {
 	columns = flag.Int32P("columns", "W", 40, "columns")
 	// flags here
-	lines := readInput(flag.Args())
+
+	inputs := readInput(flag.Args())
 
 	// var cow = `         \  ^__^
     //       \ (oo)\_______
@@ -69,14 +70,15 @@ func main() {
 	//         ||     ||
 	// 	`
 
+	width := maxWidth(inputs)
 	// messages := normalizeStringLength(lines, maxwidth)
 	// bubble := buildBubble(messages, maxwidth)
 
-	fmt.Println(lines)
+	fmt.Println(inputs, width)
 	// fmt.Println(cow)
 }
 
-// readInput takes in and interprets any flags, then formats the standard input and returns a text output slice of a standard width
+// readInput takes in and interprets any flags, then formats the standard input and returns a text output slice
 func readInput(args []string) []string {
 	// Initialize a temp string variable 
 	var tmps []string
@@ -121,4 +123,18 @@ func readInput(args []string) []string {
 	}
 
 	return msgs
+}
+
+// maxWidth takes in a slice of strings and returns the max width
+func maxWidth(msgs []string) int {
+	max := 0
+	// Loop through the range of msgs and update the max width every time we encounter a larger value
+	for _, msg := range msgs {
+		len := utf8.RuneCountInString(msg)
+		if len > max {
+			max = len
+		}
+	}
+
+	return max
 }
