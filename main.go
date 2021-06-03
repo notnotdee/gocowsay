@@ -3,34 +3,16 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
+	"log"
 	"os"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/mitchellh/go-wordwrap"
+	flag "github.com/ogier/pflag"
 )
 
-// tabsToSpaces converts all tabs found in the lines slice to 4 spaces ([]string), to prevent misalignments in counting the runes
-func tabsToSpaces(lines []string) []string {
-	var format []string
-	for _, line := range lines {
-		line = strings.Replace(line, "\t", "    ", -1)
-		format = append(format, line)
-	}
-	return format
-}
-
-// calculateMaxWidth takes a slice of strings and returns the length of the string with max length
-func calculateMaxWidth(lines []string) int {
-	width := 0
-	for _, line := range lines {
-		len := utf8.RuneCountInString(line)
-		if len > width {
-			width = len
-		}
-	}
-
-	return width
-}
+var columns *int32
 
 // normalizeStringLength takes a slice of strings and appends to each one a number of spaces required to achieve an equal number of runes per line
 func normalizeStringLength(lines []string, width int) []string {
@@ -76,40 +58,67 @@ func buildBubble(lines []string, width int) string {
 }
 
 func main() {
-	info, err := os.Stdin.Stat()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	columns = flag.Int32P("columns", "W", 40, "columns")
+	// flags here
+	lines := readInput(flag.Args())
 
-	if info.Mode()&os.ModeNamedPipe == 0 {
-		fmt.Println("This command is intended to work with pipes.")
-		return
-	}
+	// var cow = `         \  ^__^
+    //       \ (oo)\_______
+	//     (__)\       )\/\
+	//         ||----w |
+	//         ||     ||
+	// 	`
 
-	var lines []string
-	reader := bufio.NewReader(os.Stdin)
+	// messages := normalizeStringLength(lines, maxwidth)
+	// bubble := buildBubble(messages, maxwidth)
 
-	for {
-		line, _, err := reader.ReadLine()
-		if err != nil && err == io.EOF {
-			break
+	fmt.Println(lines)
+	// fmt.Println(cow)
+}
+
+// readInput takes in and interprets any flags, then formats the standard input and returns a text output slice of a standard width
+func readInput(args []string) []string {
+	// Initialize a temp string variable 
+	var tmps []string
+
+	// If the length of args is 0, there are no flags, so we interpret input as text to be printed
+	if len(args) == 0 {
+		// Initialize a new scanner to read from os.Stdin
+		s := bufio.NewScanner(os.Stdin)
+
+		// Scan will advance the scanner to the next token for as long as that is a valid operation
+		for s.Scan() {
+			tmps = append(tmps, s.Text())
 		}
-		lines = append(lines, string(line))
+
+		// If there is an error, display it
+		if s.Err() != nil {
+			log.Printf("Err reading stdin: %s\n", s.Err().Error())
+			os.Exit(1)
+		}
+		
+		// If there is no stdin, display an error
+		if len(tmps) == 0 {
+			fmt.Println("Err: no input from stdin")
+			os.Exit(1)
+		}
+	} else {
+		// If the length of args is anything but 0, set tmps equal to args
+		tmps = args
 	}
 
-	var cow = `         \  ^__^
-          \ (oo)\_______
-	    (__)\       )\/\
-	        ||----w |
-	        ||     ||
-		`
+	// Initialize a messages variable
+	var msgs []string
+	for i := 0; i < len(tmps); i++ {
+		// Replace tabs with spaces to prep the string for formatting with WrapString
+		expand := strings.Replace(tmps[i], "\t", "    ", -1)
 
-	lines = tabsToSpaces(lines)
-	maxwidth := calculateMaxWidth(lines)
-	messages := normalizeStringLength(lines, maxwidth)
-	bubble := buildBubble(messages, maxwidth)
+		// WrapString wraps the given string within lim width in characters; wrapping only happens at whitespace
+		tmp := wordwrap.WrapString(expand, uint(*columns))
 
-	fmt.Println(bubble)
-	fmt.Println(cow)
+		// Use a single append to concatenate two slices
+		msgs = append(msgs, strings.Split(tmp, "\n")...)
+	}
+
+	return msgs
 }
