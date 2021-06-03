@@ -1,7 +1,3 @@
-#### gocowsay
-
-A [cowsay](https://en.wikipedia.org/wiki/Cowsay) implementation in Go. 
-
 #### Instructions
 
 Currently designed to work with any CLI program (like `fortune`) that can pipe its stdout into the stdin of the `gocowsay` executable. 
