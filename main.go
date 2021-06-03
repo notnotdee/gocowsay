@@ -3,37 +3,80 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
+	"log"
 	"os"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/mitchellh/go-wordwrap"
+	flag "github.com/ogier/pflag"
 )
 
-// tabsToSpaces converts all tabs found in the lines slice to 4 spaces ([]string), to prevent misalignments in counting the runes
-func tabsToSpaces(lines []string) []string {
-	var format []string
-	for _, line := range lines {
-		line = strings.Replace(line, "\t", "    ", -1)
-		format = append(format, line)
+var columns *int32
+
+// readInput takes in and interprets any flags, then formats the standard input and returns a text output slice
+func readInput(args []string) []string {
+	// Initialize a temp string variable
+	var tmps []string
+
+	// If the length of args is 0, there are no flags, so we interpret input as text to be printed
+	if len(args) == 0 {
+		// Initialize a new scanner to read from os.Stdin
+		s := bufio.NewScanner(os.Stdin)
+
+		// Scan will advance the scanner to the next token for as long as that is a valid operation
+		for s.Scan() {
+			tmps = append(tmps, s.Text())
+		}
+
+		// If there is an error, display it
+		if s.Err() != nil {
+			log.Printf("Err reading stdin: %s\n", s.Err().Error())
+			os.Exit(1)
+		}
+
+		// If there is no stdin, display an error
+		if len(tmps) == 0 {
+			fmt.Println("Err: no input from stdin")
+			os.Exit(1)
+		}
+	} else {
+		// If the length of args is anything but 0, set tmps equal to args
+		tmps = args
 	}
-	return format
+
+	// Initialize a messages variable
+	var msgs []string
+	for i := 0; i < len(tmps); i++ {
+		// Replace tabs with spaces to prep the string for formatting with WrapString
+		expand := strings.Replace(tmps[i], "\t", "    ", -1)
+
+		// WrapString wraps the given string within lim width in characters; wrapping only happens at whitespace
+		tmp := wordwrap.WrapString(expand, uint(*columns))
+
+		// Use a single append to concatenate two slices
+		msgs = append(msgs, strings.Split(tmp, "\n")...)
+	}
+
+	return msgs
 }
 
-// calculateMaxWidth takes a slice of strings and returns the length of the string with the longest length
-func calculateMaxWidth(lines []string) int {
-	width := 0
-	for _, line := range lines {
-		len := utf8.RuneCountInString(line)
-		if len > width {
-			width = len
+// maxWidth takes in a slice of strings and returns the max width
+func maxWidth(msgs []string) int {
+	max := 0
+	// Loop through the range of msgs and update the max width every time we encounter a larger value
+	for _, msg := range msgs {
+		len := utf8.RuneCountInString(msg)
+		if len > max {
+			max = len
 		}
 	}
 
-	return width
+	return max
 }
 
-// normalizeStringLength takes a slice of strings and appends to each one a number of spaces required to achieve an equal number of runes
-func normalizeStringLength(lines []string, width int) []string {
+// setPadding takes a slice of strings and appends to each one a number of spaces required to achieve an equal number of runes per line
+func setPadding(lines []string, width int) []string {
 	var format []string
 	for _, line := range lines {
 		str := line + strings.Repeat(" ", width-utf8.RuneCountInString(line))
@@ -43,7 +86,7 @@ func normalizeStringLength(lines []string, width int) []string {
 	return format
 }
 
-// buildBubble takes a slice of strings of width maxwidth, prepends/appends margins on first and last line, and at start/end of each line, then returns a string with the contents of the text bubble
+// buildBubble takes a slice of strings of a normalized width, prepends/appends borders on first and last line and at the start/end of each line, then returns a string with the contents of the entire formatted text bubble
 func buildBubble(lines []string, width int) string {
 	var borders []string
 	count := len(lines)
@@ -76,39 +119,10 @@ func buildBubble(lines []string, width int) string {
 }
 
 func main() {
-	// os.Stdin.Stat() returns an os.FileInfo
-	info, err := os.Stdin.Stat()
-	if err != nil {
-		panic(err)
-	}
-	// os.FileInfo.Mode() returns a FileMode flag, which represents a file's mode and permission bits.
-	// The .Mode() looks like this: `$ Dcrw--w----`
-	// The flag we are looking for is os.ModeNamedPipe. When this flag is on it means that we have a pipe.
-	// This way we can know when our command is receiving stdout from another process.
-	if info.Mode()&os.ModeNamedPipe == 0 {
-		fmt.Println("This command is intended to work with pipes.")
-		// fortune is a CLI tool that prints a random quotation.
-		// fmt.Println("Usage: fortune | ./gocowsay")
-		return
-	}
+	columns = flag.Int32P("columns", "W", 40, "columns")
+	// flags here
 
-	// At this point, you can query `$ fortune | ./gocowsay` in your CLI
-
-	var lines []string
-	// The bufio package provides a buffered I/O in GoLang.
-	// NewReader returns a new Reader whose buffer has the default size.
-	// We're passing the NewReader the result of the stdin.
-	reader := bufio.NewReader(os.Stdin)
-
-	// ReadRune reads a single UTF-8 encoded Unicode character and returns the rune and its size in bytes. If the encoded rune is invalid, it consumes one byte and returns unicode.ReplacementChar (U+FFFD) with a size of 1.
-	// EOF is the error returned by Read when no more input is available.
-	for {
-		line, _, err := reader.ReadLine()
-		if err != nil && err == io.EOF {
-			break
-		}
-		lines = append(lines, string(line))
-	}
+	inputs := readInput(flag.Args())
 
 	var cow = `         \  ^__^
           \ (oo)\_______
@@ -117,10 +131,9 @@ func main() {
 	        ||     ||
 		`
 
-	lines = tabsToSpaces(lines)
-	maxwidth := calculateMaxWidth(lines)
-	messages := normalizeStringLength(lines, maxwidth)
-	bubble := buildBubble(messages, maxwidth)
+	width := maxWidth(inputs)
+	messages := setPadding(inputs, width)
+	bubble := buildBubble(messages, width)
 
 	fmt.Println(bubble)
 	fmt.Println(cow)
