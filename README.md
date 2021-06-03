@@ -6,6 +6,22 @@ A [cowsay](https://en.wikipedia.org/wiki/Cowsay) implementation in Go.
 
 Currently designed to work with any CLI program (like `fortune`) that can pipe its stdout into the stdin of the `gocowsay` executable. 
 
+##### To run the program within the project directory
+```
+$ go build -o gocowsay
+```
+
+```
+$ sudo apt install fortune
+```
+
+```
+$ fortune | ./gocowsay
+```
+
+
+##### To create a global executable
+
 From within the project directory:
 ```
 $ go build -o gocowsay
