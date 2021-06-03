@@ -1,6 +1,6 @@
 #### Instructions
 
-Currently designed to work with any CLI tool (`fortune` is an easy one) that can pipe its stdout into the stdin of the `gocowsay` program, or echoed text.
+Currently designed to work with any CLI tool (`fortune` is an easy one) or echoed text that can pipe its stdout into the stdin of the `gocowsay` program.
 
 **To run the program within the project directory**
 ```
