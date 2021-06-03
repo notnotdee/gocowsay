@@ -14,8 +14,8 @@ import (
 
 var columns *int32
 
-// normalizeStringLength takes a slice of strings and appends to each one a number of spaces required to achieve an equal number of runes per line
-func normalizeStringLength(lines []string, width int) []string {
+// setPadding takes a slice of strings and appends to each one a number of spaces required to achieve an equal number of runes per line
+func setPadding(lines []string, width int) []string {
 	var format []string
 	for _, line := range lines {
 		str := line + strings.Repeat(" ", width-utf8.RuneCountInString(line))
@@ -71,10 +71,10 @@ func main() {
 	// 	`
 
 	width := maxWidth(inputs)
-	// messages := normalizeStringLength(lines, maxwidth)
+	messages := setPadding(inputs, width)
 	// bubble := buildBubble(messages, maxwidth)
 
-	fmt.Println(inputs, width)
+	fmt.Println(messages)
 	// fmt.Println(cow)
 }
 
