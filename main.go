@@ -19,7 +19,7 @@ func tabsToSpaces(lines []string) []string {
 	return format
 }
 
-// calculateMaxWidth takes a slice of strings and returns the length of the string with the longest length
+// calculateMaxWidth takes a slice of strings and returns the length of the string with max length
 func calculateMaxWidth(lines []string) int {
 	width := 0
 	for _, line := range lines {
@@ -32,7 +32,7 @@ func calculateMaxWidth(lines []string) int {
 	return width
 }
 
-// normalizeStringLength takes a slice of strings and appends to each one a number of spaces required to achieve an equal number of runes
+// normalizeStringLength takes a slice of strings and appends to each one a number of spaces required to achieve an equal number of runes per line
 func normalizeStringLength(lines []string, width int) []string {
 	var format []string
 	for _, line := range lines {
@@ -43,7 +43,7 @@ func normalizeStringLength(lines []string, width int) []string {
 	return format
 }
 
-// buildBubble takes a slice of strings of width maxwidth, prepends/appends margins on first and last line, and at start/end of each line, then returns a string with the contents of the text bubble
+// buildBubble takes a slice of strings of a normalized width, prepends/appends borders on first and last line and at the start/end of each line, then returns a string with the contents of the entire formatted text bubble
 func buildBubble(lines []string, width int) string {
 	var borders []string
 	count := len(lines)
@@ -92,7 +92,6 @@ func main() {
 
 	for {
 		line, _, err := reader.ReadLine()
-		reader.Buffered()
 		if err != nil && err == io.EOF {
 			break
 		}
