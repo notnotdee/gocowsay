@@ -2,7 +2,7 @@
 
 Currently designed to work with any CLI tool (`fortune` is an easy one) or echoed text that can pipe its stdout into the stdin of the `gocowsay` program.
 
-**To run the program within the project directory**
+**To run the program within the project directory** (after cloning)
 ```
 $ go build -o gocowsay
 ```
